@@ -30,7 +30,7 @@ rm -rf "tmp/*"
 pushd "tmp"
 
 echo "downloadNpmModule.sh: installing NPM module"
-npm --ignore-scripts install "$NAME@$VERSION"
+npm  --save-exact --no-bin-links --ignore-scripts install "$NAME@$VERSION"
 
 for DIFF_FILE in ../*.diff
 do
