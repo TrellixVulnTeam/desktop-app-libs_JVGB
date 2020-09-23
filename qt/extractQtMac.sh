@@ -5,12 +5,12 @@ set -e
 #-------------------------------------------------------------------------------------------------
 
 if [ ! -d "$1/lib/QtCore.framework" ]; then
-	echo "* extractFromQtMac.sh: \"qtbase\" path not provided"
-	echo "*     Usage: ./extractFromQtMac.sh /path/to/qt/qtbase"
+	echo "* extractQtMac.sh: \"qtbase\" path not provided"
+	echo "*     Usage: ./extractQtMac.sh /path/to/qt/qtbase"
 	exit 1
 fi
 
-echo "extractFromQtMac.sh: \"qtbase\" path: $1"
+echo "extractQtMac.sh: \"qtbase\" path: $1"
 
 #-------------------------------------------------------------------------------------------------
 
@@ -60,4 +60,4 @@ popd
 
 #-------------------------------------------------------------------------------------------------
 
-echo "extractFromQtMac.sh: done"
+echo "extractQtMac.sh: done"

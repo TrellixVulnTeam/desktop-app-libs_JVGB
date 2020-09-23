@@ -5,12 +5,12 @@ set -e
 #-------------------------------------------------------------------------------------------------
 
 if [ ! -f "$1/bin/Qt5Core.dll" ]; then
-	echo "* extractFromQtWin.sh: \"qtbase\" path not provided"
-	echo "*     Usage: ./extractFromQtWin.sh /path/to/qt/qtbase"
+	echo "* extractQtWin.sh: \"qtbase\" path not provided"
+	echo "*     Usage: ./extractQtWin.sh /path/to/qt/qtbase"
 	exit 1
 fi
 
-echo "extractFromQtWin.sh: \"qtbase\" path: $1"
+echo "extractQtWin.sh: \"qtbase\" path: $1"
 
 #-------------------------------------------------------------------------------------------------
 
@@ -40,4 +40,4 @@ cp "$1/plugins/sqldrivers/qsqlite.dll" "bin/sqldrivers"
 
 #-------------------------------------------------------------------------------------------------
 
-echo "extractFromQtWin.sh: done"
+echo "extractQtWin.sh: done"

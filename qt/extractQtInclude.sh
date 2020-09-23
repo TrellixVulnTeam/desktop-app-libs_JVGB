@@ -5,12 +5,12 @@ set -e
 #-------------------------------------------------------------------------------------------------
 
 if [ ! -d "$1/include" ]; then
-	echo "* extractFromQtInclude.sh: \"qtbase\" path not provided"
-	echo "*     Usage: ./extractFromQtInclude.sh /path/to/qt/qtbase"
+	echo "* extractQtInclude.sh: \"qtbase\" path not provided"
+	echo "*     Usage: ./extractQtInclude.sh /path/to/qt/qtbase"
 	exit 1
 fi
 
-echo "extractFromQtInclude.sh: \"qtbase\" path: $1"
+echo "extractQtInclude.sh: \"qtbase\" path: $1"
 
 #-------------------------------------------------------------------------------------------------
 
@@ -23,4 +23,4 @@ cp -r "$1/include/QtSql"     "include"
 
 #-------------------------------------------------------------------------------------------------
 
-echo "extractFromQtInclude.sh: done"
+echo "extractQtInclude.sh: done"
