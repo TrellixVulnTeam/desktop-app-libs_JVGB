@@ -1,0 +1,8 @@
+7zip*
+perl*
+nasm*
+openssl*
+
+_build_x32
+_build_x64
+_out
