@@ -15,11 +15,8 @@ set OUT_X64=_out\openssl-%OPENSSL_VERSION%\win32-x64
 
 echo buildOpenSsl.bat
 
-if not exist %OUT_X32% ( md %OUT_X32% )
-del /s /q %OUT_X32%\*
-
-if not exist %OUT_X64% ( md %OUT_X64% )
-del /s /q %OUT_X64%\*
+if not exist _out ( md _out )
+del /s /q _out\*
 
 ::-------------------------------------------------------------------------------------------------
 
@@ -100,6 +97,7 @@ echo buildOpenSsl.bat: building x32 OpenSSL...
 nmake || exit /b 1
 
 echo buildOpenSsl.bat: copying libssl-1_1.dll...
+md ..\..\%OUT_X32%
 copy libssl-1_1.dll ..\..\%OUT_X32% || exit /b 1
 echo buildOpenSsl.bat: copying libcrypto-1_1.dll...
 copy libcrypto-1_1.dll ..\..\%OUT_X32% || exit /b 1
@@ -135,6 +133,7 @@ echo buildOpenSsl.bat: building x64 OpenSSL...
 nmake || exit /b 1
 
 echo buildOpenSsl.bat: copying libssl-1_1-x64.dll...
+md ..\..\%OUT_X64%
 copy libssl-1_1-x64.dll ..\..\%OUT_X64% || exit /b 1
 echo buildOpenSsl.bat: copying libcrypto-1_1-x64.dll...
 copy libcrypto-1_1-x64.dll ..\..\%OUT_X64% || exit /b 1
@@ -146,6 +145,7 @@ popd
 
 echo buildOpenSsl.bat: packing artifacts
 pushd _out
+del /s /q openssl-%OPENSSL_VERSION%.zip
 7z a openssl-%OPENSSL_VERSION%.zip *
 popd
 
