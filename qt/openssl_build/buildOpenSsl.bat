@@ -1,35 +1,33 @@
 @echo off
 
-set OPENSSL_URL=https://www.openssl.org/source/openssl-1.1.1h.tar.gz
+:: before pasting this script into TC, do "%" -> "%%" replace
+
+set S3_PREFIX=https://samepage-swarchive.s3-eu-west-1.amazonaws.com/openssl
+
+:: https://www.openssl.org/source/openssl-1.1.1h.tar.gz
+set OPENSSL_URL=%S3_PREFIX%/openssl-1.1.1h.tar.gz
 set OPENSSL_VERSION=1.1.1h
 
-::TODO replace with real 7Zip.zip (for some reason, its impossible to find 7Zip in an ordinary .zip archive, which PS can extract)
-set SZIP_URL=https://github.com/Squirrel/Squirrel.Windows/releases/download/1.9.1/Squirrel.Windows-1.9.1.zip
-set PERL_URL=http://strawberryperl.com/download/5.32.0.1/strawberry-perl-5.32.0.1-32bit.zip
-set NASM_URL=https://www.nasm.us/pub/nasm/releasebuilds/2.15.05/win32/nasm-2.15.05-win32.zip
+set SZIP_URL=%S3_PREFIX%/7z-19.0.0-32bit.zip
+set PERL_URL=%S3_PREFIX%/strawberry-perl-5.32.0.1-32bit.zip
+set NASM_URL=%S3_PREFIX%/nasm-2.15.05-win32.zip
 
 set OUT_X32=_out\openssl-%OPENSSL_VERSION%\win32-ia32
 set OUT_X64=_out\openssl-%OPENSSL_VERSION%\win32-x64
 
-::-------------------------------------------------------------------------------------------------
-
 echo buildOpenSsl.bat
 
-if not exist _out ( md _out )
-del /s /q _out\*
-
 ::-------------------------------------------------------------------------------------------------
 
-if not exist 7zip\7z.exe (
-	if not exist 7zip.zip (
+if not exist 7z\7z.exe (
+	if not exist 7z.zip (
 		echo buildOpenSsl.bat: downloading 7Zip...
-		powershell.exe -ExecutionPolicy Bypass -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%SZIP_URL%' -OutFile '7zip.zip'" || exit /b 1
+		powershell.exe -ExecutionPolicy Bypass -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%SZIP_URL%' -OutFile '7z.zip'" || exit /b 1
 	)
 	echo buildOpenSsl.bat: extracting 7Zip...
-	md 7zip
-	powershell.exe -ExecutionPolicy Bypass -Command "Expand-Archive -LiteralPath '7zip.zip' -DestinationPath '7zip'" || exit /b 1
+	powershell.exe -ExecutionPolicy Bypass -Command "Expand-Archive -LiteralPath '7z.zip' -DestinationPath '.'" || exit /b 1
 )
-set PATH=%CD%\7zip;%PATH%
+set PATH=%CD%\7z;%PATH%
 
 ::-------------------------------------------------------------------------------------------------
 
@@ -44,7 +42,7 @@ if not exist perl\perl\bin\perl.exe (
 
 	pushd perl
 	echo buildOpenSsl.bat: configuring Perl...
-	call relocation.pl.bat || exit /b 1
+	call relocation.pl.bat 1>nul || exit /b 1
 	popd
 )
 set PATH=%CD%\perl\perl\bin;%PATH%
@@ -71,22 +69,28 @@ if not exist openssl-%OPENSSL_VERSION%.tar.gz (
 
 ::-------------------------------------------------------------------------------------------------
 
-echo buildOpenSsl.bat: extracting x32 OpenSSL...
+echo buildOpenSsl.bat: clearing out folder
+if not exist _out ( md _out )
+del /s /q _out\*
 
+::-------------------------------------------------------------------------------------------------
+
+echo buildOpenSsl.bat: clearing x32 build folder
 if not exist _build_x32 ( md _build_x32 )
 del /s /q _build_x32\* 1>nul
+
+echo buildOpenSsl.bat: extracting OpenSSL into x32 build folder
 pushd _build_x32 || exit /b 1
 7z.exe x -tgzip -so ..\openssl-%OPENSSL_VERSION%.tar.gz | 7z.exe x -si -ttar || exit /b 1
 pushd openssl-%OPENSSL_VERSION% || exit /b 1
 
-if exist "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\Common7\Tools\VsMSBuildCmd.bat" (
-	echo buildOpenSsl.bat: BuildTools env x32
-	call "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\Common7\Tools\VsMSBuildCmd.bat" -arch=x86
+echo buildOpenSsl.bat: including VS2017 x32 env
+if exist "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools" (
+	echo buildOpenSsl.bat: VS2017 BuildTools x32 env
 	call "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" x86
 )
-if exist "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat" (
-	echo buildOpenSsl.bat: Community env x32
-	call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat" -arch=x86
+if exist "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community" (
+	echo buildOpenSsl.bat: VS2017 Community x32 env
 	call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x86
 )
 
@@ -107,22 +111,22 @@ popd
 
 ::-------------------------------------------------------------------------------------------------
 
-echo buildOpenSsl.bat: extracting x64 OpenSSL...
-
+echo buildOpenSsl.bat: clearing x64 build folder
 if not exist _build_x64 ( md _build_x64 )
 del /s /q _build_x64\* 1>nul
+
+echo buildOpenSsl.bat: extracting OpenSSL into x64 build folder
 pushd _build_x64 || exit /b 1
 7z.exe x -tgzip -so ..\openssl-%OPENSSL_VERSION%.tar.gz | 7z.exe x -si -ttar || exit /b 1
 pushd openssl-%OPENSSL_VERSION% || exit /b 1
 
-if exist "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\Common7\Tools\VsMSBuildCmd.bat" (
-	echo buildOpenSsl.bat: BuildTools env x32
-	call "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\Common7\Tools\VsMSBuildCmd.bat" -arch=amd64
+echo buildOpenSsl.bat: including VS2017 x64 env
+if exist "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools" (
+	echo buildOpenSsl.bat: VS2017 BuildTools x64 env
 	call "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" x64
 )
-if exist "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat" (
-	echo buildOpenSsl.bat: Community env x32
-	call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat" -arch=amd64
+if exist "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community" (
+	echo buildOpenSsl.bat: VS2017 Community x64 env
 	call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
 )
 
@@ -145,8 +149,7 @@ popd
 
 echo buildOpenSsl.bat: packing artifacts
 pushd _out
-del /s /q openssl-%OPENSSL_VERSION%.zip
-7z a openssl-%OPENSSL_VERSION%.zip *
+7z a openssl-%OPENSSL_VERSION%.zip * || exit /b 1
 popd
 
 echo buildOpenSsl.bat: done
