@@ -1,6 +1,8 @@
 @echo off
 
-:: before pasting this script into TC, do "%" -> "%%" replace
+:: before pasting this script into TC, do "%" -> "%%" replace (except those around TC variables)
+
+echo buildOpenSsl.bat
 
 set S3_PREFIX=https://samepage-swarchive.s3-eu-west-1.amazonaws.com/openssl
 
@@ -14,8 +16,6 @@ set NASM_URL=%S3_PREFIX%/nasm-2.15.05-win32.zip
 
 set OUT_X32=_out\openssl-%OPENSSL_VERSION%\win32-ia32
 set OUT_X64=_out\openssl-%OPENSSL_VERSION%\win32-x64
-
-echo buildOpenSsl.bat
 
 ::-------------------------------------------------------------------------------------------------
 
