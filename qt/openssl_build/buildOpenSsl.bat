@@ -4,11 +4,25 @@
 
 echo buildOpenSsl.bat
 
+set BUILD_NUMBER=%build.counter%
+set OPENSSL_VERSION=%samepage.openssl.version%
+
+if "%BUILD_NUMBER%"=="" (
+	set BUILD_NUMBER=devel
+	echo buildOpenSsl.bat: devel build
+) else (
+	set BUILD_NUMBER=b%BUILD_NUMBER%
+	echo buildOpenSsl.bat: TeamCity build %BUILD_NUMBER%
+)
+
+if "%OPENSSL_VERSION%"=="" (
+	set OPENSSL_VERSION=1.1.1h
+)
+
 set S3_PREFIX=https://samepage-swarchive.s3-eu-west-1.amazonaws.com/openssl
 
 :: https://www.openssl.org/source/openssl-1.1.1h.tar.gz
-set OPENSSL_URL=%S3_PREFIX%/openssl-1.1.1h.tar.gz
-set OPENSSL_VERSION=1.1.1h
+set OPENSSL_URL=%S3_PREFIX%/openssl-%OPENSSL_VERSION%.tar.gz
 
 set SZIP_URL=%S3_PREFIX%/7z-19.0.0-32bit.zip
 set PERL_URL=%S3_PREFIX%/strawberry-perl-5.32.0.1-32bit.zip
@@ -16,6 +30,8 @@ set NASM_URL=%S3_PREFIX%/nasm-2.15.05-win32.zip
 
 set OUT_X32=_out\openssl-%OPENSSL_VERSION%\win32-ia32
 set OUT_X64=_out\openssl-%OPENSSL_VERSION%\win32-x64
+
+echo buildOpenSsl.bat: OpenSSL version: %OPENSSL_VERSION%
 
 ::-------------------------------------------------------------------------------------------------
 
@@ -149,7 +165,7 @@ popd
 
 echo buildOpenSsl.bat: packing artifacts
 pushd _out
-7z a openssl-%OPENSSL_VERSION%.zip * || exit /b 1
+7z a openssl-%OPENSSL_VERSION%-%BUILD_NUMBER%.zip * || exit /b 1
 popd
 
 echo buildOpenSsl.bat: done
