@@ -29,7 +29,7 @@ do
 	echo "downloadElectron.sh: downloading: $ZIP_NAME"
 
 	rm -f "$ZIP_NAME"
-	curl "$ZIP_URL" -L -o "$ZIP_NAME"
+	curl "$ZIP_URL" -L -k -o "$ZIP_NAME"
 
 	if [ -f "/usr/bin/xattr" ]
 	then
